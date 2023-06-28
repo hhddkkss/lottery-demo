@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./hw.style.css" />
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        overflow: hidden;
+        background: linear-gradient(rgb(227, 109, 88), rgb(228, 245, 118))
+          no-repeat;
+      }
+      .root {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        overflow: auto;
+      }
+      .info {
+        color: rgb(48, 51, 42);
+        font-size: 50px;
+      }
+      .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      input {
+        margin: 20px;
+        padding: 1rem 0.5rem;
+        font-size: 2rem;
+      }
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      /* Firefox */
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+      button {
+        width: 300px;
+        font-size: 2rem;
+        border: none;
+        background-color: #ccc;
+        border-radius: 3px;
+        padding: 0.25rem 0.5rem;
+      }
+      button:hover {
+        background-color: #999;
+        transition: all 0.3s;
+      }
+      #show {
+        width: 600px;
+        /* background-color: rgba(3, 3, 3, 0.3); */
+        list-style: none;
+        border-radius: 3px;
+        padding: 1rem;
+      }
+
+      #show > li {
+        background-color: rgba(3, 3, 3, 0.3);
+        font-size: 2rem;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="root">
+      <label for="person" class="info">抽獎人數(請輸入數字)</label>
+      <input type="number" id="person" />
+      <button>click me to get prize!!!</button>
+      <div class="center">
+        <ul id="show"></ul>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    const click = document.querySelector("button");
+    const show = document.querySelector("#show");
+
+    click.addEventListener("click", (e) => {
+      const person = +document.querySelector("#person").value;
+
+      const html = getPrize(person).map((v) => {
+        return `<li>中獎序號:${v.sid} 禮物是: ${v.gift}</li>`;
+      });
+
+      let index = 0;
+      const timeID = setInterval(() => {
+        show.innerHTML += html[index];
+        if (index < html.length - 1) {
+          index++;
+        } else {
+          clearInterval(timeID);
+        }
+      }, 500);
+
+      // show.innerHTML = html;
+    });
+    function getPrize(person) {
+      //獎品
+      const firstPrize = ["firstPrize"];
+      const secondPrize = ["2Prize"];
+      const thirdPrizes = ["3Prize1", "3Prize2", "3Prize3"];
+      const fourthPrizes = [
+        "4Prize1",
+        "4Prize2",
+        "4Prize3",
+        "4Prize4",
+        "4Prize5",
+      ];
+      const fifthPrizes = [
+        "5Prize1",
+        "5Prize2",
+        "5Prize3",
+        "5Prize4",
+        "5Prize5",
+        "5Prize6",
+        "5Prize7",
+        "5Prize8",
+        "5Prize9",
+      ];
+
+      const winLottery = [];
+      //打亂排序人數陣列
+      const numArr = [];
+      for (let i = 1; i <= person; i++) {
+        numArr.push(i);
+      }
+      numArr.sort((a, b) => {
+        return Math.random() - Math.random() > 0 ? 1 : -1;
+      });
+      //判斷機率
+      for (let i = 0; i < numArr.length; i++) {
+        const chance = +Math.random().toFixed(3);
+        switch (true) {
+          case chance < 0.001 && firstPrize.length > 0:
+            let firstPrizeItem = firstPrize.shift();
+            winLottery.push({ sid: [numArr[i]], gift: firstPrizeItem });
+            break;
+
+          case chance < 0.03 && secondPrize.length > 0:
+            let secondPrizeItem = secondPrize.shift();
+            winLottery.push({ sid: numArr[i], gift: secondPrizeItem });
+            break;
+
+          case chance < 0.13 && thirdPrizes.length > 0:
+            let thirdPrizesItem = thirdPrizes.shift();
+            winLottery.push({ sid: numArr[i], gift: thirdPrizesItem });
+            break;
+
+          case chance < 0.18 && fourthPrizes.length > 0:
+            let fourthPrizesItem = fourthPrizes.shift();
+            winLottery.push({ sid: numArr[i], gift: fourthPrizesItem });
+            break;
+
+          case chance < 0.25 && fifthPrizes.length > 0:
+            let fifthPrizesItem = fifthPrizes.shift();
+            winLottery.push({ sid: numArr[i], gift: fifthPrizesItem });
+            break;
+
+          default:
+            // console.log(`${numArr[i]}未中獎`);
+            break;
+        }
+      }
+
+      //如果每個獎品都要送出的話
+      if (winLottery.length === 18)
+        winLottery.push({
+          sid: numArr[numArr.length - 1],
+          gift: firstPrize.shift(),
+        });
+      return winLottery;
+    }
+  </script>
+</html>
